@@ -10,6 +10,7 @@ function getFrontPage(){
       buildNetwork(discussion);
     }
 
+
   articles.forEach(function(article, i){
     url = "http://reddit.com"+article["data"]["permalink"];
     var rank = i+1;
@@ -52,7 +53,9 @@ function readJSON(input){
   svg.selectAll("line.link").remove();
   var data = input;
   var firstNode = data[0];
+
   var entry = firstNode['data']['children'][0]['data'];
+
   var out = {}
   out.name = entry.author;
   out.id = entry.name;
@@ -78,7 +81,10 @@ function readJSON(input){
   $("#topic_title").append(title);
   nodes.push(out);
   var convo = data[1];
+
   walkGraph(convo);
+
+  colorNodes();
 }
 
 function walkGraph(entry){
@@ -122,7 +128,7 @@ function checkIfUser(entry){
 function addName(user){
   if (user.name in names){
     names[user.name]+=1
-      nodecolor[user.name]= "red";
+    nodecolor[user.name]= "red";
   }
   else{
     names[user.name]=1;

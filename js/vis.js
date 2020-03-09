@@ -91,30 +91,85 @@ function updateNetwork(){
     .call(force.drag)
 
     force.start();
-  colorNodes();
+  //colorNodes();
 }
 
+function getColor(value){
+    //value from 0 to 1
+    var hue=((1-value)*120).toString(10);
+    return ["hsl(",hue,",100%,50%)"].join("");
+}
+
+function colorcode_commment(comment) {
+  console.log(comment);
+
+  commentData = comment.replace(/\W/g, ' ');
+  var postData = '{ comment: { text: "' + commentData + '" }, languages: ["en"], requestedAttributes: {TOXICITY:{ } } }';
+
+  var score = 0;
+
+  jQuery.ajax({
+    url: 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=AIzaSyDyRDMXjs3UFWxmsAcyBnkTG5dLgK4Jjzw',
+    type: "POST",
+    data: postData,
+    dataType: "json",
+    async: false,
+    contentType: "application/json; charset=utf-8",
+    success: function (data) {
+      //var comment = document.getElementById(this.indexValue.id);
+      score = data.attributeScores.TOXICITY.summaryScore.value;
+      //console.log(score);
+      //return score
+
+    }
+  });
+
+  return score;
+}
+
+
+
 function colorNodes(){
-  for(name in nodecolor){
-    nodecolor[name]=d3.rgb(255*Math.random(), 255*Math.random(), 255*Math.random())
+  console.log(nodes);
+  //for(name in nodecolor){
+  for(var node in nodes){
+    //nodecolor[name]=d3.rgb(255*Math.random(), 255*Math.random(), 255*Math.random())
+    //console.log(nodes[node]);
+
+    x = colorcode_commment(nodes[node].body);
+    //x = Math.random();
+
+    myColor = d3.rgb(getColor(x));
+    console.log("what is it", x, myColor);
+
+    nodecolor[nodes[node].name]=myColor;
+
+
+
   }
+
+
 
   //set colors
   svg.selectAll("circle")
     .style("fill", function(d){
+
+
       if (d.name === OP.name){
-        return "orange";
-      }
-      else if (names[d.name]===1){
-        return "black"
-      }
-      else{
+        return "purple";
+      }else{
+        //console.log(d);
+        //return nodecolor[d.name];
+        //x = Math.random();
+        //x = colorcode_commment(d.body);
+        //myColor = d3.rgb(getColor(x));
+        console.log(nodecolor[node.name]);
         return nodecolor[d.name];
       }
     }
     )
-}
 
+}
 
 function displayTooltip(node){
   var pos = d3.mouse(this);
